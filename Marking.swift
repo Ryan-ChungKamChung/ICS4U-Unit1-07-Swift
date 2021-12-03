@@ -25,8 +25,8 @@ func nextGaussian() -> Double {
         var v1, v2, s: Double
 
         repeat {
-            v1 = 2 * drand48() - 1
-            v2 = 2 * drand48() - 1
+            v1 = 2 * Double.random(in: 0.0...1.0) - 1
+            v2 = 2 * Double.random(in: 0.0...1.0) - 1
             s = v1 * v1 + v2 * v2
         } while s >= 1 || s == 0
 
@@ -40,9 +40,8 @@ func generateTable(students: [String], assignments: [String]) -> [[String]] {
     let numStudents = students.count
     let numAssignments = assignments.count
 
-    var markArray = Array(
-        repeating: Array(repeating: "0", count: numAssignments + 1),
-        count: numStudents)
+    var markArray = Array(repeating: Array(
+        repeating: "", count: numAssignments + 1), count: numStudents)
 
     for loop1 in 0..<numStudents {
         markArray[loop1][0] = students[loop1]
