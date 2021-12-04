@@ -1,15 +1,3 @@
-//
-//  Statistics.swift
-//
-//  Created by Ryan Chung
-//  Created on 2021-11-25
-//  Version 1.0
-//  Copyright (c) 2021 Ryan Chung. All rights reserved.
-//
-//  This program calculates the mean, median and mode of a given dataset
-//  located inside of a text file.
-//
-
 import Foundation
 
 private var nextNextGaussian: Double? = {
@@ -55,28 +43,7 @@ func generateTable(students: [String], assignments: [String]) -> [[String]] {
     return markArray
 }
 
-func fileContentsToArray(fileName: String) throws -> [String] {
-    do {
-        let contents = try String(contentsOfFile: fileName)
-        let lines = contents.split(separator: "\n")
-        var stringArray = [String]()
-        stringArray.reserveCapacity(lines.count)
+let students = ["Ryan", "Roman", "Jenoe"]
+let assignments = ["#1", "#2", "#3"]
 
-        for line in lines where !line.isEmpty {
-            stringArray.append(String(line))
-        }
-
-        return stringArray
-    } catch {
-        print("Something went wrong. Try again.")
-        print("\nDone.")
-        exit(001)
-    }
-}
-
-let students = try fileContentsToArray(fileName: CommandLine.arguments[1])
-let assignments = try fileContentsToArray(fileName: CommandLine.arguments[2])
-
-print(generateTable(students: students, assignments:assignments))
-
-print("\nDone.")
+print(generateTable(students: students, assignments: assignments))
