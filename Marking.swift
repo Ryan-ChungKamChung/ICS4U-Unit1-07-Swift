@@ -40,16 +40,15 @@ func generateTable(students: [String], assignments: [String]) -> [[String]] {
     let numStudents = students.count
     let numAssignments = assignments.count
 
-    var markArray = Array(repeating: Array(
-        repeating: "", count: numAssignments + 1), count: numStudents)
+    var markArray: [[String]] = []
 
-    for loop1 in 0..<numStudents {
-        markArray[loop1][0] = students[loop1]
+    for row in 0..<numStudents {
+        markArray.append([String]())
+        markArray[row].append(students[row])
 
-        for loop2 in 0..<numAssignments {
-
+        for _ in 0..<numAssignments {
             let mark = Int(floor(nextGaussian() * 10 + 75))
-            markArray[loop1][loop2 + 1] = String(mark)
+            markArray[row].append(String(mark))
         }
     }
 
