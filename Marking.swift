@@ -1,41 +1,51 @@
 //
-//  Statistics.swift
+//  Marking.swift
 //
 //  Created by Ryan Chung
-//  Created on 2021-11-25
+//  Created on 2021-12-04
 //  Version 1.0
 //  Copyright (c) 2021 Ryan Chung. All rights reserved.
 //
-//  This program calculates the mean, median and mode of a given dataset
-//  located inside of a text file.
+//  This program calculates a 2d array, populates it with random marks
+//  (Gaussian distribution) and outputs it to CSV.
 //
 
 import Foundation
 
-private var nextNextGaussian: Double? = {
-    srand48(Int.random(in: 0...100))
-    return nil
-}()
-
+// Returns a random number from the gaussian distribution
+// (75 is the mean, 10% deviation)
+// Translated from Java's Random().nextGaussian() method
+// Equivalent -> new Random().nextGaussian * 10 + 75
 func nextGaussian() -> Double {
+
+    var nextNextGaussian: Double? = {
+        srand48(Int.random(in: 0...100))
+        return nil
+    }()
+
     if let gaussian = nextNextGaussian {
         nextNextGaussian = nil
         return gaussian
     } else {
-        var v1, v2, s: Double
+        var value1: Double
+        var value2: Double
+        var sum: Double
+        let lowBound = 0.0
+        let highBound = 1.0
 
         repeat {
-            v1 = 2 * Double.random(in: 0.0...1.0) - 1
-            v2 = 2 * Double.random(in: 0.0...1.0) - 1
-            s = v1 * v1 + v2 * v2
-        } while s >= 1 || s == 0
+            value1 = 2 * Double.random(in: lowBound...highBound) - 1
+            value2 = 2 * Double.random(in: lowBound...highBound) - 1
+            sum = pow(value1, 2) + pow(value1, 2)
+        } while sum >= 1 || sum == 0
 
-        let multiplier = sqrt(-2 * log(s)/s)
-        nextNextGaussian = v2 * multiplier
-        return v1 * multiplier
+        let multiplier = sqrt(-2 * log(sum)/sum)
+        nextNextGaussian = value2 * multiplier
+        return value1 * multiplier
     }
 }
 
+// Generates a 2d array populated with marks and names
 func generateTable(students: [String], assignments: [String]) -> [[String]] {
     let numStudents = students.count
     let numAssignments = assignments.count
@@ -55,6 +65,7 @@ func generateTable(students: [String], assignments: [String]) -> [[String]] {
     return markArray
 }
 
+// Converts an inputted file to an array of strings based on lines
 func fileContentsToArray(fileName: String) throws -> [String] {
     do {
         let contents = try String(contentsOfFile: fileName)
@@ -74,9 +85,40 @@ func fileContentsToArray(fileName: String) throws -> [String] {
     }
 }
 
+// Gathers input from CLI, makes a 2d array and outputs it to marks.csv
+
+// Gets 2 files from CLI
 let students = try fileContentsToArray(fileName: CommandLine.arguments[1])
 let assignments = try fileContentsToArray(fileName: CommandLine.arguments[2])
 
-print(generateTable(students: students, assignments:assignments))
+// Randomly generated table associated to students and assignments
+let markArray = generateTable(students: students, assignments: assignments)
+
+// Clears the file
+let text = ""
+do {
+    try text.write(to: URL(fileURLWithPath: "./marks.csv"), atomically: false, encoding: .utf8)
+} catch {
+    print(error)
+}
+
+// Takes every array inside of the 2d array, formats it and appends it to
+// marks.csv
+if let fileWriter = try? FileHandle(forUpdating:
+    URL(fileURLWithPath: "./marks.csv")) {
+
+    let assignmentsArray = ", " + assignments.joined(separator: ", ") + "\n"
+
+    fileWriter.seekToEndOfFile()
+    fileWriter.write(assignmentsArray.data(using: .utf8)!)
+
+    for array in markArray {
+        let arrayToString = array.joined(separator: ", ") + "\n"
+        fileWriter.seekToEndOfFile()
+        fileWriter.write(arrayToString.data(using: .utf8)!)
+    }
+
+    fileWriter.closeFile()
+}
 
 print("\nDone.")
